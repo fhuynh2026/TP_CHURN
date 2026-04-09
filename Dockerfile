@@ -9,6 +9,7 @@ COPY  requirements.txt requirements.txt
 COPY app.py app.py
 COPY data data
 COPY templates templates
+COPY test test
 
 # Installer les dépendances
 
