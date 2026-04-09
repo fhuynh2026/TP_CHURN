@@ -1,0 +1,121 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Churn Prediction</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 350px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 90%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 12px;
+            width: 100%;
+            border: none;
+            border-radius: 8px;
+            background: #4facfe;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #3a8dde;
+        }
+
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .probability {
+            font-size: 14px;
+            color: gray;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+    <h2>📊 Churn Predictor</h2>
+
+    <input type="number" id="age" placeholder="Age">
+    <input type="number" id="account_manager" placeholder="Account Manager (0 ou 1)">
+    <input type="number" id="years" placeholder="Years">
+    <input type="number" id="num_sites" placeholder="Num Sites">
+
+    <button onclick="predict()">Prédire</button>
+
+    <div class="result" id="result"></div>
+    <div class="probability" id="probability"></div>
+</div>
+
+<script>
+function predict() {
+    const data = {
+        Age: document.getElementById('age').value,
+        Account_Manager: document.getElementById('account_manager').value,
+        Years: document.getElementById('years').value,
+        Num_Sites: document.getElementById('num_sites').value
+    };
+
+    fetch('/predict', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            document.getElementById('result').innerText = "Erreur : " + data.error;
+            return;
+        }
+
+        let resultText = data.prediction === 1 
+            ? "🚨 Client à risque de churn"
+            : "✅ Client fidèle";
+
+        document.getElementById('result').innerText = resultText;
+        document.getElementById('probability').innerText =
+            "Probabilité de churn : " + (data.probability * 100).toFixed(2) + "%";
+    });
+}
+</script>
+
+</body>
+</html>
